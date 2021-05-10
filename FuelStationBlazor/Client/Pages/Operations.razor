@@ -136,7 +136,7 @@
             currentListOperations = fullListOperations;
             if (currentOperation.TankID > 0)
             {
-                currentListOperations = currentListOperations.Where(t => t.TankID == currentOperation.FuelID).ToList();
+                currentListOperations = currentListOperations.Where(t => t.TankID == currentOperation.TankID).ToList();
             }
             if (currentOperation.FuelID > 0)
             {
@@ -177,6 +177,8 @@
                 var code = await Http.PostAsJsonAsync("api/operations/", currentOperation);
                 fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
                 currentListOperations = fullListOperations;
+                currentCount = currentListOperations.Count();
+
             }
 
         }
@@ -187,6 +189,8 @@
             currentOperation = new OperationViewModel();
             fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
             currentListOperations = fullListOperations;
+            currentCount = currentListOperations.Count();
+
         }
 
 
