@@ -19,5 +19,10 @@ namespace FuelStationBlazor.Shared
         //Дата операции
         public DateTime Date { get; set; }
 
+        public OperationViewModel()
+        {
+            OperationID = 0;
+            Date = DateTime.Today;
+        }
     }
 }

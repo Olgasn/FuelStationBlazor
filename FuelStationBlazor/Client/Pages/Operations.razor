@@ -56,8 +56,8 @@
                         <input class="form-control" name="date" id="date" @bind="currentOperation.Date" @bind:format="dd-MM-yyyy" />
                     </div>
                     <div class="panel-body">
-                        <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
-                        <a id="reset" class="btn btn-smbtn-primary">Сбросить</a>
+                        <button type="submit" class="btn btn-sm btn-primary" @onclick="SaveOperation">Сохранить</button>
+                        <a id="reset" class="btn btn-sm btn-primary" @onclick="Reset">Сбросить</a>
 
                     </div>
                 </td>
@@ -109,11 +109,7 @@
         private List<Tank> tanks;
         private List<Fuel> fuels;
         private int currentCount;
-        OperationViewModel currentOperation = new OperationViewModel() 
-        {
-            OperationID=0,
-            Date=DateTime.Today
-        };
+        OperationViewModel currentOperation = new OperationViewModel();
 
 
         protected override async Task OnInitializedAsync()
@@ -132,7 +128,6 @@
             if (currentOperation.TankID > 0)
             {
                 currentListOperations = currentListOperations.Where(t => t.TankID == currentOperation.FuelID).ToList();
-
             }
             if (currentOperation.FuelID > 0)
             {
@@ -147,14 +142,36 @@
             OperationViewModel operation = currentListOperations.Where(o => o.OperationID == operationId).First();
             currentOperation = operation;
 
-
         }
         private async Task DeleteOperation(int operationId)
         {
             OperationViewModel operation = currentListOperations.Where(o => o.OperationID == operationId).First();
             currentListOperations.Remove(operation);
             var code = await Http.DeleteAsync("api/operations/" + operationId);
+            fullListOperations.Remove(operation);
+        }
 
+
+        private async Task SaveOperation()
+        {
+            if (currentOperation.OperationID > 0)
+            {
+                OperationViewModel operation = currentListOperations.Find(o => o.OperationID == currentOperation.OperationID);
+                operation = currentOperation;
+                var code = await Http.PutAsJsonAsync("api/operations/", currentOperation);
+            }
+            if (currentOperation.OperationID == 0)
+            {
+                OperationViewModel operation = currentOperation;
+                var code = await Http.PostAsJsonAsync("api/operations/", currentOperation);
+            }
+
+        }
+
+        private void Reset()
+        {
+
+            currentOperation = new OperationViewModel();
 
         }
 
