@@ -1,0 +1,161 @@
+﻿@page "/operations"
+@using FuelStationBlazor.Shared
+@using FuelStationBlazor.Shared.Models
+@using System.Linq
+@inject HttpClient Http
+<div class="container">
+    <h2>Список операций</h2>
+    <form name="operationForm">
+        <table class="table" border="0">
+            <tr>
+                <td>
+                    <label for="operationId" id="typeCRUD" name="typeCRUD">Добавить:</label>
+                    <input type="hidden" id="operationId" name="operationId" @bind="@currentOperation.OperationID" />
+                    <div class="form-group">
+                        <label Добавить>Топливо:</label>
+                        <select id="fuelId" name="fuelId" @bind="@currentOperation.FuelID">
+                            <option value=0 selected>(выбор)</option>
+                            @if (fuels == null)
+                            {
+
+                            }
+                            else
+                                @foreach (var fuel in fuels)
+                                {
+                                    <option value="@fuel.FuelID">@fuel.FuelType</option>
+                                }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tankType">Емкость:</label>
+                        <select id="tankId" name="tankId" @bind="@currentOperation.TankID">
+                            <option value=0 selected>(выбор)</option>
+                            @if (tanks == null)
+                            {
+
+                            }
+                            else
+                                @foreach (var tank in tanks)
+                                {
+                                    <option value="@tank.TankID">@tank.TankType</option>
+                                }
+                        </select>
+                    </div>
+                </td>
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <label for="inc_exp">Приход-расход:</label>
+                        <input class="form-control" name="inc_exp" id="inc_exp" @bind="@currentOperation.Inc_Exp" />
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Дата:</label>
+                        <input class="form-control" name="date" id="date" @bind="currentOperation.Date" @bind:format="dd-MM-yyyy" />
+                    </div>
+                    <div class="panel-body">
+                        <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+                        <a id="reset" class="btn btn-smbtn-primary">Сбросить</a>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+    Число записей: @currentCount<button class="btn btn-primary" @onclick="FilterOperations">Фильтровать</button>
+</div>
+    @if (currentListOperations == null)
+    {
+        <p><em>Загрузка...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Код опрерации</th>
+                    <th>Название топлива</th>
+                    <th>Емкость</th>
+                    <th>Приход-расход:</th>
+                    <th>Дата</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var operation in currentListOperations)
+                {
+                    <tr>
+                        <td>@operation.OperationID</td>
+                        <td>@operation.FuelType</td>
+                        <td>@operation.TankType</td>
+                        <td>@operation.Inc_Exp</td>
+                        <td>@operation.Date.ToShortDateString()</td>
+                         <td>
+                            <a class='editLink' @onclick="@(e => GetOperation(operation.OperationID))">Выбрать</a> | 
+                            <a class='removeLink' @onclick="@(e => DeleteOperation(operation.OperationID))">Удалить</a>
+                         </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @code {
+        private List<OperationViewModel> currentListOperations;
+        private List<OperationViewModel> fullListOperations;
+
+        private List<Tank> tanks;
+        private List<Fuel> fuels;
+        private int currentCount;
+        OperationViewModel currentOperation = new OperationViewModel() 
+        {
+            OperationID=0,
+            Date=DateTime.Today
+        };
+
+
+        protected override async Task OnInitializedAsync()
+        {
+            fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
+            currentListOperations = fullListOperations;
+            tanks = await Http.GetFromJsonAsync<List<Tank>>("/api/operations/tanks");
+            fuels = await Http.GetFromJsonAsync<List<Fuel>>("/api/operations/fuels");
+            currentCount = currentListOperations.Count();
+
+        }
+
+        private void FilterOperations()
+        {
+            currentListOperations = fullListOperations;
+            if (currentOperation.TankID > 0)
+            {
+                currentListOperations = currentListOperations.Where(t => t.TankID == currentOperation.FuelID).ToList();
+
+            }
+            if (currentOperation.FuelID > 0)
+            {
+                currentListOperations = currentListOperations.Where(f => f.FuelID == currentOperation.FuelID).ToList();
+            }
+            currentCount = currentListOperations.Count();
+
+        }
+        private void GetOperation(int operationId)
+        {
+
+            OperationViewModel operation = currentListOperations.Where(o => o.OperationID == operationId).First();
+            currentOperation = operation;
+
+
+        }
+        private async Task DeleteOperation(int operationId)
+        {
+            OperationViewModel operation = currentListOperations.Where(o => o.OperationID == operationId).First();
+            currentListOperations.Remove(operation);
+            var code = await Http.DeleteAsync("api/operations/" + operationId);
+
+
+        }
+
+    }
