@@ -82,12 +82,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Код опрерации</th>
-                    <th>Название топлива</th>
-                    <th>Емкость</th>
-                    <th>Приход-расход:</th>
-                    <th>Дата</th>
-
+                    <th>Код опрерации</th><th>Название топлива</th><th>Емкость</th><th>Приход-расход:</th><th>Дата</th>
                 </tr>
             </thead>
             <tbody>
@@ -117,10 +112,10 @@
         private int currentCount;
         private OperationViewModel currentOperation = new OperationViewModel();
         private ElementReference saveOperation;
-        private string currentStatus = "Добавление";
+        private string currentStatus = "Добавление"; //текущий назначение формы
 
 
-
+        //Инициализация: загрузка списков операций, емкостей и видов топлива
         protected override async Task OnInitializedAsync()
         {
             fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
@@ -130,7 +125,7 @@
             currentCount = currentListOperations.Count();
 
         }
-
+        //Фильтрация списка операций
         private void FilterOperations()
         {
             currentListOperations = fullListOperations;
@@ -145,6 +140,7 @@
             currentCount = currentListOperations.Count();
 
         }
+        //Получение данных по одной опреации
         private async Task GetOperation(int operationId)
         {
             currentStatus = "Редактирование";
@@ -153,6 +149,7 @@
             await saveOperation.FocusAsync();
 
         }
+        //Удаление данных одной операции
         private async Task DeleteOperation(int operationId)
         {
             OperationViewModel operation = currentListOperations.Where(o => o.OperationID == operationId).First();
@@ -161,7 +158,7 @@
             fullListOperations.Remove(operation);
         }
 
-
+        //Сохранение данных после редактирования или добавления операции
         private async Task SaveOperation()
         {
             if (currentOperation.OperationID > 0 & CheckOperation())//редактирование
@@ -172,17 +169,14 @@
             }
             if (currentOperation.OperationID == 0 & CheckOperation())//создание
             {
-
                 OperationViewModel operation = currentOperation;
                 var code = await Http.PostAsJsonAsync("api/operations/", currentOperation);
                 fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
                 currentListOperations = fullListOperations;
                 currentCount = currentListOperations.Count();
-
             }
-
         }
-
+        //Сброс значений формы и повторная загрузка списка операций
         private async Task Reset()
         {
             currentStatus = "Добавление";
@@ -193,14 +187,11 @@
 
         }
 
-
+        //Проверка корректности заполнения
         private bool CheckOperation()
         {
             if (currentOperation.TankID > 0 & currentOperation.FuelID > 0) return true;
             else return false;
-
         }
-
-
 
     }
