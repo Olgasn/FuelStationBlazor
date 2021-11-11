@@ -8,6 +8,7 @@ using FuelStationBlazor.Server.Data;
 
 namespace FuelStationBlazor.Server.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class OperationsController : Controller
     {
@@ -16,7 +17,9 @@ namespace FuelStationBlazor.Server.Controllers
         {
             _context = context;
         }
-
+        /// <summary>
+        /// Получение списка всех операций
+        /// </summary>
         // GET api/values
         [HttpGet]
         [Produces("application/json")]
@@ -36,11 +39,18 @@ namespace FuelStationBlazor.Server.Controllers
                 });
             return ovm.ToList();
         }
-
-
+        /// <summary>
+        /// Получение списка операций, удовлетворяющих заданному условию
+        /// </summary>
+        /// <remarks>
+        /// Описание параметров
+        /// </remarks>
+        /// <param name="FuelID">Код топлива</param>
+        /// <param name="TankID">Код емкости</param>
+        /// <returns>JSON</returns>
         [HttpGet("FilteredOperations")]
         [Produces("application/json")]
-        public List<OperationViewModel> GetFilteredOperations([Bind("FuelID", "TankID")] Operation operation)
+        public List<OperationViewModel> GetFilteredOperations(int FuelID, int TankID)
         {
             IQueryable<OperationViewModel> ovm = _context.Operations.Include(t => t.Tank).Include(f => f.Fuel)
                 .Select(o =>
@@ -55,28 +65,32 @@ namespace FuelStationBlazor.Server.Controllers
                     Date = o.Date
 
                 });
-            if (operation.TankID > 0)
+            if (TankID > 0)
             {
-                ovm = ovm.Where(op => op.TankID == operation.TankID);
+                ovm = ovm.Where(op => op.TankID == TankID);
 
             }
-            if (operation.FuelID > 0)
+            if (FuelID > 0)
             {
-                ovm = ovm.Where(op => op.FuelID == operation.FuelID);
+                ovm = ovm.Where(op => op.FuelID == FuelID);
 
             }
             return ovm.ToList();
         }
 
 
-        // GET api/values
+        /// <summary>
+        /// Список видов топлива 
+        /// </summary>
         [HttpGet("fuels")]
         [Produces("application/json")]
         public IEnumerable<Fuel> GetFuels()
         {
             return _context.Fuels.ToList();
         }
-        // GET api/values
+        /// <summary>
+        /// Список емкостей 
+        /// </summary>
         [HttpGet("tanks")]
         [Produces("application/json")]
         public IEnumerable<Tank> GetTanks()
@@ -84,7 +98,14 @@ namespace FuelStationBlazor.Server.Controllers
             return _context.Tanks.ToList();
         }
 
-
+        /// <summary>
+        /// Получение данных одной операции
+        /// </summary>
+        /// <remarks>
+        /// Описание параметра
+        /// </remarks>
+        /// <param name="id">Код операции</param>
+        /// <returns>JSON</returns>
         // GET api/values/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
@@ -95,6 +116,9 @@ namespace FuelStationBlazor.Server.Controllers
             return new ObjectResult(operation);
         }
 
+        /// <summary>
+        /// Регистрация новой приходной или расходной операции
+        /// </summary>
         // POST api/values
         [HttpPost]
         public IActionResult Post([FromBody] Operation operation)
@@ -108,7 +132,14 @@ namespace FuelStationBlazor.Server.Controllers
             _context.SaveChanges();
             return Ok(operation);
         }
-
+        /// <summary>
+        /// Обновление данных одной операции
+        /// </summary>
+        /// <remarks>
+        /// Объект передается в теле запроса
+        /// </remarks>
+        /// <param name="operation">объект, определяющий операцию</param>
+        /// <returns>A status</returns>
         // PUT api/values/5
         [HttpPut]
         public IActionResult Put([FromBody] Operation operation)
@@ -128,7 +159,14 @@ namespace FuelStationBlazor.Server.Controllers
 
             return Ok(operation);
         }
-
+        /// <summary>
+        /// Удаление данных одной опреции
+        /// </summary>
+        /// <remarks>
+        /// Описание параметра
+        /// </remarks>
+        /// <param name="id">Код опарации</param>
+        /// <returns>A status</returns>
         // DELETE api/values/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
