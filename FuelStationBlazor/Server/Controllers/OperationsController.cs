@@ -88,6 +88,9 @@ namespace FuelStationBlazor.Server.Controllers
         {
             return _context.Fuels.ToList();
         }
+        
+
+
         /// <summary>
         /// Список емкостей 
         /// </summary>
