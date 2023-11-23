@@ -1,0 +1,96 @@
+﻿@page "/fuels"
+@using FuelStationBlazor.Shared
+@using FuelStationBlazor.Shared.Models
+@using System.Linq
+@inject HttpClient Http
+<div class="container">
+    <h2>Виды топлива</h2>
+        <table class="table" border="0" >
+            <tr>
+                <td>
+                        <label for="fuelType">Название:</label>
+                        <input  name="fuelType" id="fuelType" @bind="@fuelType" />
+                </td>
+                <td>
+                    <a class="btn btn-primary" @onclick="FilterFuels">Фильтровать</a>
+                </td>                
+            </tr>
+            <tr>
+                <td>
+                    <div class="panel-body">
+                        <a id="reset" class="btn btn-primary" @onclick="Reset">Сбросить</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+ Число записей: @currentCount   
+</div>
+
+    @if (currentListFuels == null)
+    {
+        <p><em>Загрузка...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Код топлива</th><th>Название топлива</th><th>Плотность</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fuel in currentListFuels)
+                {
+                    <tr>
+                        <td>@fuel.FuelID</td>
+                        <td>@fuel.FuelType</td>
+                        <td>@fuel.FuelDensity</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @code {
+        private List<Fuel> currentListFuels;
+        private List<Fuel> fullListFuels;
+        private int currentCount;
+        private Fuel currentFuel = new Fuel();
+        private string fuelType = ""; //фильтр для поиска вида топлива
+
+
+        //Инициализация: загрузка списка топлива
+        protected override async Task OnInitializedAsync()
+        {
+            fullListFuels = await Http.GetFromJsonAsync<List<Fuel>>("api/operations/fuels");
+            currentListFuels = fullListFuels;
+            currentCount = currentListFuels.Count();
+
+        }
+        //Фильтрация списка видов топлива
+        private void FilterFuels()
+        {
+            currentListFuels = fullListFuels;
+            if (fuelType!="")
+            {
+                currentListFuels = currentListFuels.Where(f => f.FuelType.Contains(fuelType)).ToList();
+            }
+            currentCount = currentListFuels.Count();
+
+        }
+
+        //Сброс значений формы и повторная загрузка списка операций
+        private async Task Reset()
+        {
+            fuelType="";
+            currentFuel = new Fuel();
+            fullListFuels = await Http.GetFromJsonAsync<List<Fuel>>("api/operations/fuels");
+            currentListFuels = fullListFuels;
+            currentCount = currentListFuels.Count();
+
+        }
+
+
+
+    }
