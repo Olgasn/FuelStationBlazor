@@ -1,0 +1,94 @@
+﻿@page "/tanks"
+@using FuelStationBlazor.Shared
+@using FuelStationBlazor.Shared.Models
+@using System.Linq
+@using FuelStationBlazor.Client.Components
+
+@inject HttpClient Http
+
+<div class="container">
+    <h2>Емкости</h2>
+        <table class="table" border="0" >
+            <tr>
+                <td>
+                        <label for="tankType">Название:</label>
+                        <input  name="tankType" id="tankType" @bind="@tankType" />
+                </td>
+                <td>
+                    <a class="btn btn-primary" @onclick="FilterTanks">Фильтровать</a>
+                </td>                
+            </tr>
+            <tr>
+                <td>
+                    <div class="panel-body">
+                        <a id="reset" class="btn btn-primary" @onclick="Reset">Сбросить</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+ Число записей: @currentCount   
+</div>
+
+    @if (currentListTanks == null)
+    {
+        <p><em>Загрузка...</em></p>
+    }
+    else
+    {
+        <TableTemplate Items="currentListTanks" Context="tank">
+            <TableHeader>
+            <th>Код емкости</th><th>Название емкости</th><th>Объем</th><th>Вес</th><th>Материал</th>
+            </TableHeader>
+            <RowTemplate>
+                <td>@tank.TankID</td>
+                <td>@tank.TankType</td>
+                <td>@tank.TankVolume</td>
+                <td>@tank.TankWeight</td>
+                <td>@tank.TankMaterial</td>
+            </RowTemplate>
+        </TableTemplate>
+
+    }
+
+    @code {
+        private List<Tank> currentListTanks;
+        private List<Tank> fullListTanks;
+        private int currentCount;
+        private Tank currentTank = new Tank();
+        private string tankType = ""; //фильтр для поиска емкости
+
+
+        //Инициализация: загрузка списка емкостей
+        protected override async Task OnInitializedAsync()
+        {
+            fullListTanks = await Http.GetFromJsonAsync<List<Tank>>("api/operations/tanks");
+            currentListTanks = fullListTanks;
+            currentCount = currentListTanks.Count();
+
+        }
+        //Фильтрация списка емкостей
+        private void FilterTanks()
+        {
+            currentListTanks = fullListTanks;
+            if (tankType!="")
+            {
+                currentListTanks = currentListTanks.Where(f => f.TankType.Contains(tankType)).ToList();
+            }
+            currentCount = currentListTanks.Count();
+
+        }
+
+        //Сброс значений формы и повторная загрузка списка емкостей
+        private async Task Reset()
+        {
+            tankType="";
+            currentTank = new Tank();
+            fullListTanks = await Http.GetFromJsonAsync<List<Tank>>("api/operations/tanks");
+            currentListTanks = fullListTanks;
+            currentCount = currentListTanks.Count();
+
+        }
+
+
+
+    }

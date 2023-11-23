@@ -1,22 +1,19 @@
-﻿using FuelStationBlazor.Shared.Models;
-using FuelStationBlazor.Shared;
+﻿using FuelStationBlazor.Server.Data;
+using FuelStationBlazor.Server.ViewModels;
+using FuelStationBlazor.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using FuelStationBlazor.Server.Data;
 
 namespace FuelStationBlazor.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OperationsController : Controller
+    public class OperationsController(FuelsContext context) : Controller
     {
-        private readonly FuelsContext _context;
-        public OperationsController(FuelsContext context)
-        {
-            _context = context;
-        }
+        private readonly FuelsContext _context = context;
+
         /// <summary>
         /// Получение списка всех операций
         /// </summary>
@@ -25,7 +22,10 @@ namespace FuelStationBlazor.Server.Controllers
         [Produces("application/json")]
         public List<OperationViewModel> Get()
         {
-            IQueryable<OperationViewModel> ovm = _context.Operations.Include(t => t.Tank).Include(f => f.Fuel).Select(o =>
+            IQueryable<OperationViewModel> ovm = _context.Operations
+                .Include(t => t.Tank)
+                .Include(f => f.Fuel)
+                .Select(o =>
                 new OperationViewModel
                 {
                     OperationID = o.OperationID,
@@ -35,7 +35,6 @@ namespace FuelStationBlazor.Server.Controllers
                     TankType = o.Tank.TankType,
                     Inc_Exp = o.Inc_Exp,
                     Date = o.Date
-
                 });
             return ovm.ToList();
         }
@@ -52,7 +51,9 @@ namespace FuelStationBlazor.Server.Controllers
         [Produces("application/json")]
         public List<OperationViewModel> GetFilteredOperations(int FuelID, int TankID)
         {
-            IQueryable<OperationViewModel> ovm = _context.Operations.Include(t => t.Tank).Include(f => f.Fuel)
+            IQueryable<OperationViewModel> ovm = _context.Operations
+                .Include(t => t.Tank)
+                .Include(f => f.Fuel)
                 .Select(o =>
                 new OperationViewModel
                 {
@@ -88,7 +89,7 @@ namespace FuelStationBlazor.Server.Controllers
         {
             return _context.Fuels.ToList();
         }
-        
+
 
 
         /// <summary>

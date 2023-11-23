@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace FuelStationBlazor.Shared
+namespace FuelStationBlazor.Server.ViewModels
+
 {
     public class OperationViewModel
     {
