@@ -3,6 +3,9 @@
 @using FuelStationBlazor.Shared.Models
 @using System.Linq
 @inject HttpClient Http
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 <div class="container">
     <h2>Виды топлива</h2>
         <table class="table" border="0" >
@@ -58,12 +61,14 @@
         private int currentCount;
         private Fuel currentFuel = new Fuel();
         private string fuelType = ""; //фильтр для поиска вида топлива
+        private string host = "";// сервер с данными
 
 
         //Инициализация: загрузка списка топлива
         protected override async Task OnInitializedAsync()
         {
-            fullListFuels = await Http.GetFromJsonAsync<List<Fuel>>("api/operations/fuels");
+            host = Configuration["WebAPIURL"];
+            fullListFuels = await Http.GetFromJsonAsync<List<Fuel>>(host+"api/operations/fuels");
             currentListFuels = fullListFuels;
             currentCount = currentListFuels.Count();
 
@@ -85,7 +90,7 @@
         {
             fuelType="";
             currentFuel = new Fuel();
-            fullListFuels = await Http.GetFromJsonAsync<List<Fuel>>("api/operations/fuels");
+            fullListFuels = await Http.GetFromJsonAsync<List<Fuel>>(host+"api/operations/fuels");
             currentListFuels = fullListFuels;
             currentCount = currentListFuels.Count();
 

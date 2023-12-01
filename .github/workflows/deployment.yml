@@ -1,0 +1,35 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+        include-prerelease: true
+        
+    - name: publish
+      run: |
+        cd BlazorClientApp
+        dotnet publish -c release
+      
+    - name: Change base-tag in index.html from / to the necessary
+      run: sed -i 's/<base href="\/" \/>/<base href="\/FuelStationBlazor\/" \/>/g' ./Client/bin/release/net8.0/publish/wwwroot/index.html
+      
+    - name: Add .nojekyll file
+      run: touch ./Client/bin/release/net8.0/publish/wwwroot/.nojekyll
+      
+    - uses: JamesIves/github-pages-deploy-action@v4
+      name: gh-pages publish
+      with:
+        branch: gh-pages
+        folder: ./Client/bin/release/net8.0/publish/wwwroot

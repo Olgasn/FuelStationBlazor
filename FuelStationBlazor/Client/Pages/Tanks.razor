@@ -3,6 +3,8 @@
 @using FuelStationBlazor.Shared.Models
 @using System.Linq
 @using FuelStationBlazor.Client.Components
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 
 @inject HttpClient Http
 
@@ -37,7 +39,7 @@
     {
         <TableTemplate Items="currentListTanks" Context="tank">
             <TableHeader>
-            <th>Код емкости</th><th>Название емкости</th><th>Объем</th><th>Вес</th><th>Материал</th>
+                <th>Код емкости</th><th>Название емкости</th><th>Объем</th><th>Вес</th><th>Материал</th>
             </TableHeader>
             <RowTemplate>
                 <td>@tank.TankID</td>
@@ -50,18 +52,19 @@
 
     }
 
-    @code {
-        private List<Tank> currentListTanks;
-        private List<Tank> fullListTanks;
-        private int currentCount;
-        private Tank currentTank = new Tank();
-        private string tankType = ""; //фильтр для поиска емкости
-
+@code {
+    private List<Tank> currentListTanks;
+    private List<Tank> fullListTanks;
+    private int currentCount;
+    private Tank currentTank = new Tank();
+    private string tankType = ""; //фильтр для поиска емкости
+    private string host = "";// сервер с данными
 
         //Инициализация: загрузка списка емкостей
         protected override async Task OnInitializedAsync()
         {
-            fullListTanks = await Http.GetFromJsonAsync<List<Tank>>("api/operations/tanks");
+            host = Configuration["WebAPIURL"];
+            fullListTanks = await Http.GetFromJsonAsync<List<Tank>>(host+"api/operations/tanks");
             currentListTanks = fullListTanks;
             currentCount = currentListTanks.Count();
 
@@ -83,7 +86,7 @@
         {
             tankType="";
             currentTank = new Tank();
-            fullListTanks = await Http.GetFromJsonAsync<List<Tank>>("api/operations/tanks");
+            fullListTanks = await Http.GetFromJsonAsync<List<Tank>>(host+"api/operations/tanks");
             currentListTanks = fullListTanks;
             currentCount = currentListTanks.Count();
 

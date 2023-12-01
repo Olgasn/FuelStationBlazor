@@ -2,6 +2,9 @@
 @using FuelStationBlazor.Client.ViewModels
 @using FuelStationBlazor.Shared.Models
 @using System.Linq
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 @inject HttpClient Http
 <div class="container">
     <h2>Список операций</h2>
@@ -104,25 +107,27 @@
         </table>
     }
 
-    @code {
-        private List<OperationViewModel> currentListOperations;
-        private List<OperationViewModel> fullListOperations;
-        private List<Tank> tanks;
-        private List<Fuel> fuels;
-        private int currentCount;
-        private OperationViewModel currentOperation = new OperationViewModel();
-        private ElementReference saveOperation;
-        private string currentStatus = "Добавление"; //текущий назначение формы
+@code {
+    private List<OperationViewModel> currentListOperations;
+    private List<OperationViewModel> fullListOperations;
+    private List<Tank> tanks;
+    private List<Fuel> fuels;
+    private int currentCount;
+    private OperationViewModel currentOperation = new OperationViewModel();
+    private ElementReference saveOperation;
+    private string currentStatus = "Добавление"; //текущий назначение формы
+    private string host = "";// сервер с данными
 
 
-        //Инициализация: загрузка списков операций, емкостей и видов топлива
-        protected override async Task OnInitializedAsync()
-        {
-            fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
-            currentListOperations = fullListOperations;
-            tanks = await Http.GetFromJsonAsync<List<Tank>>("/api/operations/tanks");
-            fuels = await Http.GetFromJsonAsync<List<Fuel>>("/api/operations/fuels");
-            currentCount = currentListOperations.Count();
+    //Инициализация: загрузка списков операций, емкостей и видов топлива
+    protected override async Task OnInitializedAsync()
+    {
+        host =  Configuration["WebAPIURL"];
+        fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>(host+"api/operations");
+        currentListOperations = fullListOperations;
+        tanks = await Http.GetFromJsonAsync<List<Tank>>(host+"api/operations/tanks");
+        fuels = await Http.GetFromJsonAsync<List<Fuel>>(host+"api/operations/fuels");
+        currentCount = currentListOperations.Count();
 
         }
         //Фильтрация списка операций
@@ -154,7 +159,7 @@
         {
             OperationViewModel operation = currentListOperations.Where(o => o.OperationID == operationId).First();
             currentListOperations.Remove(operation);
-            var code = await Http.DeleteAsync("api/operations/" + operationId);
+            var code = await Http.DeleteAsync(host+"api/operations/" + operationId);
             fullListOperations.Remove(operation);
         }
 
@@ -165,12 +170,12 @@
             {
                 OperationViewModel operation = currentListOperations.Find(o => o.OperationID == currentOperation.OperationID);
                 operation = currentOperation;
-                var code = await Http.PutAsJsonAsync("api/operations/", currentOperation);
+                var code = await Http.PutAsJsonAsync(host+"api/operations/", currentOperation);
             }
             if (currentOperation.OperationID == 0 & CheckOperation())//создание
             {
                 OperationViewModel operation = currentOperation;
-                var code = await Http.PostAsJsonAsync("api/operations/", currentOperation);
+                var code = await Http.PostAsJsonAsync(host+"api/operations/", currentOperation);
                 fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
                 currentListOperations = fullListOperations;
                 currentCount = currentListOperations.Count();
@@ -181,7 +186,7 @@
         {
             currentStatus = "Добавление";
             currentOperation = new OperationViewModel();
-            fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>("api/operations");
+            fullListOperations = await Http.GetFromJsonAsync<List<OperationViewModel>>(host+"api/operations");
             currentListOperations = fullListOperations;
             currentCount = currentListOperations.Count();
 
