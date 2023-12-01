@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "FuelStationBlazor.Client",
   "resources": {
-    "hash": "sha256-pZpJJFaVC1TZ/LbeACNXZiSyy0FVBqzJyt3j8ZCzoJ4=",
+    "hash": "sha256-v25eBIKy6zpjwyAzkz53pWfmDuUliQfAV73479gx0vg=",
     "jsModuleNative": {
       "dotnet.native.8.0.0.45ykigla5r.js": "sha256-LjLDIz9+J7uuiwMlQ4HbNx2BnSpphOtO2MwkoI28vdI="
     },
@@ -17,8 +17,8 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "FuelStationBlazor.Client.wasm": "sha256-ShdoeZEDCCE6g3VuPbX6gqU5S8n2EdfPCZZPC499Qmk=",
-      "FuelStationBlazor.Shared.wasm": "sha256-knIh6UMIEdD9q7caMtxVtcWDRXVEKA3WA7C5HEMieGk=",
+      "FuelStationBlazor.Client.wasm": "sha256-OBV651AWO5XQOCPE9u2d8yVVeDjTKrCBgyM/MTuESsQ=",
+      "FuelStationBlazor.Shared.wasm": "sha256-w6at9aOk6ZeO+0ggwvRR7b/WM1vKFVjzfclz/EXPRHY=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-l/1Tzv4bklyQ69Ol2B+QYdirmNUHzoxCseUoOrsFPs0=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-i0KkyqFblycmcs/dMNxWNwNbnALiVkshPSYFFF9MmdA=",
       "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-YC7DoLB+U32ce/z5zbC8uHmlwzJEuMTrIq6OmR9tfMk=",
