@@ -1,6 +1,7 @@
 ﻿using FuelStationBlazor.Server.Data;
 using FuelStationBlazor.Server.ViewModels;
 using FuelStationBlazor.Shared.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -9,7 +10,9 @@ using System.Linq;
 namespace FuelStationBlazor.Server.Controllers
 {
     [ApiController]
+    [EnableCors]
     [Route("api/[controller]")]
+
     public class OperationsController(FuelsContext context) : Controller
     {
         private readonly FuelsContext _context = context;
@@ -36,7 +39,7 @@ namespace FuelStationBlazor.Server.Controllers
                     Inc_Exp = o.Inc_Exp,
                     Date = o.Date
                 });
-            return ovm.ToList();
+            return [.. ovm];
         }
         /// <summary>
         /// Получение списка операций, удовлетворяющих заданному условию
@@ -76,7 +79,7 @@ namespace FuelStationBlazor.Server.Controllers
                 ovm = ovm.Where(op => op.FuelID == FuelID);
 
             }
-            return ovm.ToList();
+            return [.. ovm];
         }
 
 

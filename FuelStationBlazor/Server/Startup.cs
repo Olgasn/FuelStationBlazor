@@ -12,14 +12,9 @@ using System.Reflection;
 
 namespace FuelStationBlazor.Server
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; } = configuration;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -43,13 +38,12 @@ namespace FuelStationBlazor.Server
                         Url = new Uri("https://github.com/Olgasn/FuelStationWebApi")
                     }
                 });
-                services.AddCors(options =>
+                services.AddCors(policy =>
                 {
-                    options.AddDefaultPolicy(
-                        policy =>
-                        {
-                            policy.AllowAnyOrigin();  //set the allowed origin  
-                        });
+                    policy.AddPolicy("CorsPolicy", opt => opt
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
                 });
 
                 // Set the comments path for the Swagger JSON and UI.
@@ -81,7 +75,7 @@ namespace FuelStationBlazor.Server
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseCors();
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
