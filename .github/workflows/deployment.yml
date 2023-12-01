@@ -19,7 +19,8 @@ jobs:
         
     - name: publish
       run: |
-        cd FuelStationBlazor.Client
+        cd FuelStationBlazor
+        cd Client
         dotnet publish -c release
       
     - name: Change base-tag in index.html from / to the necessary
