@@ -79,7 +79,7 @@ namespace FuelStationBlazor.Server
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireCors("CorsPolicy");
                 endpoints.MapFallbackToFile("index.html");
             });
         }
