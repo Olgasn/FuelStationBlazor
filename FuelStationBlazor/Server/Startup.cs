@@ -43,6 +43,14 @@ namespace FuelStationBlazor.Server
                         Url = new Uri("https://github.com/Olgasn/FuelStationWebApi")
                     }
                 });
+                services.AddCors(options =>
+                {
+                    options.AddDefaultPolicy(
+                        policy =>
+                        {
+                            policy.AllowAnyOrigin();  //set the allowed origin  
+                        });
+                });
 
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -73,6 +81,7 @@ namespace FuelStationBlazor.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
