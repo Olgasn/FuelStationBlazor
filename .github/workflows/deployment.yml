@@ -19,7 +19,7 @@ jobs:
         
     - name: publish
       run: |
-        cd Clien
+        cd Client
         dotnet publish -c release
       
     - name: Change base-tag in index.html from / to the necessary
