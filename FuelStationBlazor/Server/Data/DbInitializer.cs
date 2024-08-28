@@ -1,9 +1,8 @@
-﻿using FuelStationBlazor.Server.Data;
-using FuelStationBlazor.Shared.Models;
+﻿using FuelStationBlazor.Shared.Models;
 using System;
 using System.Linq;
 //Класс для инициализации базы данных путем заполнения ее таблиц тестовым набором записей
-namespace FuelStationBlazor.Shared.Data
+namespace FuelStationBlazor.Server.Data
 {
     public static class DbInitializer
     {
@@ -30,8 +29,8 @@ namespace FuelStationBlazor.Shared.Data
             Random randObj = new(1);
 
             //Заполнение таблицы емкостей
-            string[] tank_voc = { "Цистерна_", "Ведро_", "Бак_", "Фляга_", "Цистерна_" };//словарь названий емкостей
-            string[] material_voc = { "Сталь", "Платина", "Алюминий", "ПЭТ", "Чугун", "Алюминий", "Сталь" };//словарь названий видов топлива
+            string[] tank_voc = ["Цистерна_", "Ведро_", "Бак_", "Фляга_", "Цистерна_"];//словарь названий емкостей
+            string[] material_voc = ["Сталь", "Платина", "Алюминий", "ПЭТ", "Чугун", "Алюминий", "Сталь"];//словарь названий видов топлива
             int count_tank_voc = tank_voc.GetLength(0);
             int count_material_voc = material_voc.GetLength(0);
             for (int tankID = 1; tankID <= tanks_number; tankID++)
@@ -46,7 +45,7 @@ namespace FuelStationBlazor.Shared.Data
             db.SaveChanges();
 
             //Заполнение таблицы видов топлива
-            string[] fuel_voc = { "Нефть_", "Бензин_", "Керосин_", "Мазут_", "Спирт_" };
+            string[] fuel_voc = ["Нефть_", "Бензин_", "Керосин_", "Мазут_", "Спирт_"];
             int count_fuel_voc = fuel_voc.GetLength(0);
             for (int fuelID = 1; fuelID <= fuels_number; fuelID++)
             {
