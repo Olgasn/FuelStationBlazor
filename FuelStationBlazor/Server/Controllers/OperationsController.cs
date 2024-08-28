@@ -90,7 +90,7 @@ namespace FuelStationBlazor.Server.Controllers
         [Produces("application/json")]
         public IEnumerable<Fuel> GetFuels()
         {
-            return _context.Fuels.ToList();
+            return [.. _context.Fuels];
         }
 
 
@@ -102,7 +102,7 @@ namespace FuelStationBlazor.Server.Controllers
         [Produces("application/json")]
         public IEnumerable<Tank> GetTanks()
         {
-            return _context.Tanks.ToList();
+            return [.. _context.Tanks];
         }
 
         /// <summary>

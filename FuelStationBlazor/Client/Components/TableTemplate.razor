@@ -18,9 +18,11 @@
 
 @code {
     [Parameter]
+#nullable enable
     public RenderFragment? TableHeader { get; set; }
 
     [Parameter]
+#nullable enable
     public RenderFragment<TItem>? RowTemplate { get; set; }
 
     [Parameter, AllowNull]
